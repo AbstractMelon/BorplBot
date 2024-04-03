@@ -1,13 +1,12 @@
-const fs = require('fs');
-const { Collection } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const commandFiles = fs.readdirSync(__dirname).filter(file => file.endsWith('.js') && file !== 'index.js');
-
-const commands = new Collection();
-
-for (const file of commandFiles) {
-    const command = require(`./${file}`);
-    commands.set(command.name, command);
-}
-
-module.exports = commands;
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('leaderboard')
+        .setDescription('Your command description')
+        // Add any other options or configurations here
+        ,
+    async execute(interaction, client) {
+        // Your command execution logic goes here
+    },
+};

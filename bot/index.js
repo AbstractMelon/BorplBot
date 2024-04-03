@@ -6,25 +6,24 @@ const fs = require('fs');
 const path = require('path');
 const { token, clientId, guildId } = require('./config');
 
-console.log("Bot starting...")
-
+console.log("Bot starting...");
 
 module.exports.bot = () => {
     const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
 
-    console.log("Timestamp Loading started!")
+    console.log("Timestamp Loading started!");
 
     const log = (message) => {
         console.log(`[${new Date().toLocaleString()}] ${message}`);
     };
 
-    console.log("Timestamp Loading done")
+    console.log("Timestamp Loading done");
 
 
-    // Register slash commands
-    console.log("Command Loading started!")
+    // Register slash commands 
+    console.log("Command Loading started!");
     const commands = [];
-    const commandFiles = fs.readdirSync(path.resolve("./bot/commands")).filter(e => e.endsWith(".js"));
+    const commandFiles = fs.readdirSync(path.resolve("./bot/commands/")).filter(e => e.endsWith(".js"));
 
     commandFiles.forEach((file) => {
         const command = require(path.resolve("./bot/commands/", file));
@@ -33,8 +32,10 @@ module.exports.bot = () => {
     });
 
 
-    const commandBodies = commands.map(command => JSON.stringify(command));
+    const commandBodies = commands.map(command => command.data);
 
+    // console.log("Command bodies:");
+    // console.log(commandBodies);
 
     const rest = new REST({ version: '9' }).setToken(token);
 
