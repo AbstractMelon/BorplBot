@@ -7,7 +7,7 @@ const commands = new Collection();
 
 for (const file of commandFiles) {
     const command = require(`./${file}`);
-    commands.set(command.data.name, command);
+    commands.set(command.name, command);
 }
 
 module.exports = commands;

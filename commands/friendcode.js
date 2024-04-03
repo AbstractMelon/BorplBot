@@ -19,35 +19,41 @@ module.exports = {
                 .addStringOption(option => option.setName('username').setDescription('The username to get friend code.'))
         ),
     async execute(interaction) {
-        const subcommand = interaction.options.getSubcommand();
-        
-        if (subcommand === 'set') {
-            const code = interaction.options.getString('code');
-            const userId = interaction.user.id;
-            
-            // Save friend code to database
-            const users = readUsers();
-            users[userId] = { code };
-            writeUsers(users);
-            
-            await interaction.reply(`Your friend code has been set to: ${code}`);
-        } else if (subcommand === 'get') {
-            const username = interaction.options.getString('username');
-            const member = await getMemberByUsername(interaction.guild, username);
-            
-            if (!member) {
-                await interaction.reply('User not found!');
-                return;
+        try {
+            const subcommand = interaction.options.getSubcommand();
+
+            if (subcommand === 'set') {
+                const code = interaction.options.getString('code');
+                const userId = interaction.user.id;
+
+                // Save friend code to database
+                const users = readUsers();
+                users[userId] = { code };
+                writeUsers(users);
+
+                await interaction.reply(`Your friend code has been set to: ${code}`);
+            } else if (subcommand === 'get') {
+                const username = interaction.options.getString('username');
+                const member = await getMemberByUsername(interaction.guild, username);
+
+                if (!member) {
+                    await interaction.reply('User not found!');
+                    return;
+                }
+
+                const userId = member.id;
+                const users = readUsers();
+
+                if (!users[userId] || !users[userId].code) {
+                    await interaction.reply('This user has not set their friend code yet!');
+                } else {
+                    await interaction.reply(`Friend code of ${member.user.username}: ${users[userId].code}`);
+                }
             }
-            
-            const userId = member.id;
-            const users = readUsers();
-            
-            if (!users[userId] || !users[userId].code) {
-                await interaction.reply('This user has not set their friend code yet!');
-            } else {
-                await interaction.reply(`Friend code of ${member.user.username}: ${users[userId].code}`);
-            }
+        } catch (error) {
+            console.error('Error executing friendcode command:', error);
+            console.log('Command:', JSON.stringify(this));
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
         }
     },
 };
