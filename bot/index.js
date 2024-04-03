@@ -28,9 +28,10 @@ module.exports.bot = () => {
     commandFiles.forEach((file) => {
         const command = require(path.resolve("./bot/commands/", file));
         commands.push(command);
-        log(`Registered command: ${command.name}`);
+        // log(`Registered command: ${command.name}`);
     });
 
+    log(`Registered 6 commands!`); // E
 
     const commandBodies = commands.map(command => command.data);
 

@@ -1,6 +1,6 @@
+// friendcode.js
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { getMemberByUsername } = require('../utils/helpers');
-const { readUsers, writeUsers } = require('../utils/database');
+const { getUserData, setUserData, isValidFriendCode } = require('../utils/helpers');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -8,51 +8,49 @@ module.exports = {
         .setDescription('Set or get friend code.')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('set')
-                .setDescription('Set your friend code.')
-                .addStringOption(option => option.setName('code').setDescription('Your friend code.'))
+                .setName('get')
+                .setDescription('Get friend code of a user.')
+                .addUserOption(option => option.setName('user').setDescription('The user to get friend code for'))
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('get')
-                .setDescription('Get friend code of a user.')
-                .addStringOption(option => option.setName('username').setDescription('The username to get friend code.'))
+                .setName('set')
+                .setDescription('Set your friend code.')
+                .addStringOption(option =>
+                    option
+                        .setName('code')
+                        .setDescription('Your friend code')
+                        .setRequired(true)
+                )
         ),
     async execute(interaction) {
         try {
             const subcommand = interaction.options.getSubcommand();
 
-            if (subcommand === 'set') {
-                const code = interaction.options.getString('code');
-                const userId = interaction.user.id;
+            if (subcommand === 'get') {
+                const user = interaction.options.getUserData('user');
+                const memberData = getUserData(user.id);
 
-                // Save friend code to database
-                const users = readUsers();
-                users[userId] = { code };
-                writeUsers(users);
-
-                await interaction.reply(`Your friend code has been set to: ${code}`);
-            } else if (subcommand === 'get') {
-                const username = interaction.options.getString('username');
-                const member = await getMemberByUsername(interaction.guild, username);
-
-                if (!member) {
-                    await interaction.reply('User not found!');
+                if (!memberData || !memberData.code) {
+                    await interaction.reply(`${user.username} has not set their friend code yet!`);
                     return;
                 }
 
-                const userId = member.id;
-                const users = readUsers();
+                await interaction.reply(`${user.username}'s friend code is: ${memberData.code}`);
+            } else if (subcommand === 'set') {
+                const code = interaction.options.getString('code');
 
-                if (!users[userId] || !users[userId].code) {
-                    await interaction.reply('This user has not set their friend code yet!');
-                } else {
-                    await interaction.reply(`Friend code of ${member.user.username}: ${users[userId].code}`);
+                if (!isValidFriendCode(code)) {
+                    await interaction.reply('Invalid friend code! Please provide a valid friend code!.');
+                    return;
                 }
+
+                const userId = interaction.user.id;
+                setUserData(userId, { code });
+                await interaction.reply(`Your friend code has been set to: ${code}`);
             }
         } catch (error) {
             console.error('Error executing friendcode command:', error);
-            console.log('Command:', JSON.stringify(this));
             await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
         }
     },
