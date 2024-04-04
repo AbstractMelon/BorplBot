@@ -28,26 +28,26 @@ module.exports = {
             const subcommand = interaction.options.getSubcommand();
 
             if (subcommand === 'get') {
-                const user = interaction.options.getUserData('user');
+                const user = interaction.options.getUser('user');
                 const memberData = getUserData(user.id);
 
                 if (!memberData || !memberData.code) {
-                    await interaction.reply(`${user.username} has not set their friend code yet!`);
+                    await interaction.reply({ content:`${user.username} has not set their friend code yet!`, ephemeral: true});
                     return;
                 }
 
-                await interaction.reply(`${user.username}'s friend code is: ${memberData.code}`);
+                await interaction.reply({ content: `${user.username}'s friend code is: ${memberData.code}`, ephemeral: true });
             } else if (subcommand === 'set') {
                 const code = interaction.options.getString('code');
 
                 if (!isValidFriendCode(code)) {
-                    await interaction.reply('Invalid friend code! Please provide a valid friend code!.');
+                    await interaction.reply({ content: 'Invalid friend code! Please provide a valid friend code!.', ephemeral: true});
                     return;
                 }
 
                 const userId = interaction.user.id;
                 setUserData(userId, { code });
-                await interaction.reply(`Your friend code has been set to: ${code}`);
+                await interaction.reply({ content: `Your friend code has been set to: ${code}`, ephemeral: true });
             }
         } catch (error) {
             console.error('Error executing friendcode command:', error);

@@ -5,30 +5,48 @@ const { Routes } = require('discord-api-types/v9');
 const fs = require('fs');
 const path = require('path');
 const { token, clientId, guildId } = require('./config');
+const { log, error, warn, debug } = require('./utils/helpers');
 
 console.log("Bot starting...");
+const reset = "\x1b[0m";
+
 
 module.exports.bot = () => {
     const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMessages] });
 
-    console.log("Timestamp Loading started!");
+    // console.log("Timestamp Loading started!");
 
     const log = (message) => {
-        console.log(`[${new Date().toLocaleString()}] ${message}`);
+        console.log("\x1b[32m"+`[Bot : Main] [ ${new Date().toLocaleString()} ] ${message}`+ reset);
+    };
+    
+    const LogError = (message) => {
+        console.log("\x1b[31m"+`[Bot : Error] [ ${new Date().toLocaleString()} ] ${message}` + reset);
+    };
+    
+    const LogWarn = (message) => {
+        console.log("\x1b[33m"+`[Bot : Warn] [ ${new Date().toLocaleString()} ] ${message}` + reset );
+    };
+    
+    const LogDebug = (message) => {
+        console.log(`[Bot : Debug] [ ${new Date().toLocaleString()} ] ${message}`);
     };
 
-    console.log("Timestamp Loading done");
-
+    log("Log Test")
+    LogWarn("Log Warn")
+    LogError("Log Error")
+    // LogDebug("Log Debug")
+    
 
     // Register slash commands 
-    console.log("Command Loading started!");
+    // console.log("Command Loading started!");
     const commands = [];
     const commandFiles = fs.readdirSync(path.resolve("./bot/commands/")).filter(e => e.endsWith(".js"));
 
     commandFiles.forEach((file) => {
         const command = require(path.resolve("./bot/commands/", file));
         commands.push(command);
-        // log(`Registered command: ${command.name}`);
+        //log(`Registered command: ${command.name}`);
     });
 
     log(`Registered 6 commands!`); // E
@@ -43,8 +61,8 @@ module.exports.bot = () => {
     rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commandBodies })
         .then(() => log('Successfully registered application commands.'))
         .catch(error => {
-            console.error('Failed to register application commands:', error);
-            log('Failed to register application commands');
+            LogError('Failed to register application commands:', error);
+            LogError('Failed to register application commands');
         });
 
     client.on("interactionCreate", async (interaction) => {
