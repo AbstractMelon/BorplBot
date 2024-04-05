@@ -58,7 +58,7 @@ module.exports.bot = () => {
 
     const rest = new REST({ version: '9' }).setToken(token);
 
-    rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commandBodies })
+    rest.put(Routes.applicationCommands(clientId), { body: commandBodies })
         .then(() => log('Successfully registered application commands.'))
         .catch(error => {
             LogError('Failed to register application commands:', error);

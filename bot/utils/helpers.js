@@ -1,7 +1,7 @@
 // helpers.js
 const fs = require('fs');
 
-const UserDataPath = './server/data/users.json';
+const UserDataPath = './server/data/accounts.json';
 
 function readUsers() {
     try {
