@@ -12,8 +12,8 @@ module.exports = {
             return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
         }
 
-        const accountsFilePath = path.join(__dirname, '../../accounts.json');
-        const backupDir = path.join(__dirname, 'server', 'backups');
+        const accountsFilePath = path.join(__dirname, '../../server/data/accounts.json');
+        const backupDir = path.join(__dirname, '../../server/data/backups/users/');
         const backupFileName = `accounts_backup_${Date.now()}.json`;
 
         // Check if the accounts file exists

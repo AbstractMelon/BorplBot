@@ -1,11 +1,15 @@
 const fs = require('fs');
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const path = require('path');
 
 // Get the data
 function readAccountsData() {
     try {
         console.log('Reading accounts data...');
-        const data = fs.readFileSync('accounts.json', 'utf8');
+        console.log('__dirname:', __dirname);
+        const filePath = path.join(__dirname, '..', '..', 'server', 'data', 'accounts.json');
+        console.log('filePath:', filePath);
+        const data = fs.readFileSync(filePath, 'utf8');
         console.log('Accounts data read successfully.');
         return JSON.parse(data);
     } catch (error) {
@@ -95,6 +99,8 @@ module.exports = {
             const matchlist = pairTeams(accounts);
             console.log('Matchlist generated successfully.');
 
+            console.log(matchlist);
+
             interaction.channel.send('Requesting...').then(async sent => {
                 let matchlistString = ""; // Makes stuff
                 matchlist.forEach((match, index) => {
@@ -107,7 +113,7 @@ module.exports = {
                     .setTitle('THE CURRENT MATCHLIST IS:\n') //done touch this
                     .setDescription(matchlistString)
                     .setTimestamp()
-                    .setFooter({ text: 'Some footer text here', iconURL: 'https://i.imgur.com/wSTFkRM.png' });
+                    .setFooter({ text: 'Bopl Bot', iconURL: 'https://i.imgur.com/wSTFkRM.png' });
 
                 // Sending the embed
                 console.log('Sending embed...');

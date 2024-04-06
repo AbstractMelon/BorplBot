@@ -37,33 +37,33 @@ module.exports.bot = () => {
     LogError("Log Error")
     // LogDebug("Log Debug")
     
-
+    const logCommandLoading = (message) => {
+        console.log(`[Command Loading] ${message}`);
+    };
+    
     // Register slash commands 
-    // console.log("Command Loading started!");
+    log("Command loading started");
     const commands = [];
     const commandFiles = fs.readdirSync(path.resolve("./bot/commands/")).filter(e => e.endsWith(".js"));
-
+    
     commandFiles.forEach((file) => {
         const command = require(path.resolve("./bot/commands/", file));
         commands.push(command);
-        //log(`Registered command: ${command.name}`);
+        // logCommandLoading(`Registered command: ${command.name}`);
     });
-
-    log(`Registered 6 commands!`); // E
-
+    
+    log(`Registered ${commands.length} commands`);
+    
     const commandBodies = commands.map(command => command.data);
-
-    // console.log("Command bodies:");
-    // console.log(commandBodies);
-
+    
     const rest = new REST({ version: '9' }).setToken(token);
-
-    rest.put(Routes.applicationCommands(clientId), { body: commandBodies })
+    
+    rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commandBodies })
         .then(() => log('Successfully registered application commands.'))
         .catch(error => {
-            LogError('Failed to register application commands:', error);
-            LogError('Failed to register application commands');
+            console.error('Failed to register application commands:', error);
         });
+    
 
     client.on("interactionCreate", async (interaction) => {
         try {
